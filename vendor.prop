@@ -29,3 +29,6 @@ persist.vendor.cp.vbus_offset_mv=1040
 
 # Media
 vendor.media.target.version=2
+
+# Perf
+ro.vendor.extension_library=libqti-perfd-client.so
