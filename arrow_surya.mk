@@ -22,7 +22,7 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/aosp_base_telephony.mk)
 $(call inherit-product, device/xiaomi/surya/device.mk)
 
 # Inherit from common configuration
-$(call inherit-product, vendor/evolution/config/common_full_phone.mk)
+$(call inherit-product, vendor/arrow/config/common_full_phone.mk)
 
 # Boot Animation
 TARGET_BOOT_ANIMATION_RES := 1080
@@ -31,8 +31,12 @@ TARGET_BOOT_ANIMATION_RES := 1080
 TARGET_GAPPS_ARCH := arm64
 IS_PHONE := true
 
+# Arrow Stuffs
+ARROW_GAPPS := true
+DEVICE_MAINTAINER=Gustavo Mends
+
 # Device identifier
-PRODUCT_NAME := evolution_surya
+PRODUCT_NAME := arrow_surya
 PRODUCT_DEVICE := surya
 PRODUCT_BRAND := POCO
 PRODUCT_MODEL := POCO X3 NFC
