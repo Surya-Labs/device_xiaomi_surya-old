@@ -6,24 +6,21 @@ on init
     chown system system /proc/tp_gesture
     chmod 0644 /proc/tp_gesture
 
-on post-fs-data
-    # Smart charging
-    chown system system /sys/class/power_supply/battery/input_suspend
-    chmod 0666 /sys/class/power_supply/battery/input_suspend
+    chmod 0664 /sys/class/thermal/thermal_message/sconfig
+    chown system system /sys/class/thermal/thermal_message/sconfig
+    chmod 0666 /sys/class/thermal/thermal_message/temp_state
+    chown system system /sys/class/thermal/thermal_message/temp_state
 
-on boot
-    wait /sys/class/power_supply/battery/temp
-    start mi_thermald
+    chown system system /sys/module/battery_saver/parameters/enabled
+    chmod 0664 /sys/module/battery_saver/parameters/enabled
 
-on charger
-    wait /sys/class/power_supply/battery/temp
-    start mi_thermald
-
-service mi_thermald /vendor/bin/mi_thermald
-    class main
-    user root
-    group system
-    seclabel u:r:mi_thermald:s0
+on post-fs
+    chmod 0755 /mnt/vendor/persist/camera/rear_dc_cal_wt.bin
+    chown system system /mnt/vendor/persist/camera/rear_dc_cal_wt.bin
+    chmod 0755 /mnt/vendor/persist/camera/rear_dc_cal_wd.bin
+    chown system system /mnt/vendor/persist/camera/rear_dc_cal_wd.bin
+    chmod 0755 /mnt/vendor/persist/camera/rear_dc_cal_wu.bin
+    chown system system /mnt/vendor/persist/camera/rear_dc_cal_wu.bin
 
 service vendor.audio-hal /vendor/bin/hw/android.hardware.audio.service
     override
@@ -36,6 +33,12 @@ service vendor.audio-hal /vendor/bin/hw/android.hardware.audio.service
     writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks
     socket audio_hw_socket seqpacket 0666 system system
     onrestart restart audioserver
+
+service mi_thermald /vendor/bin/mi_thermald
+    class core
+    user root
+    group system
+    seclabel u:r:mi_thermald:s0
 
 service vendor.nfc_hal_service /vendor/bin/hw/android.hardware.nfc@1.2-service
     override

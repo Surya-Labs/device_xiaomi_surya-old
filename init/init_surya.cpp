@@ -35,6 +35,7 @@
 #define _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
 #include <sys/_system_properties.h>
 #include <android-base/properties.h>
+#include <sys/sysinfo.h>
 
 #include "property_service.h"
 #include "vendor_init.h"
@@ -84,8 +85,8 @@ void set_device_fp() {
     string source_partitions[] = { "", "bootimage", "odm.", "product.",
                                    "system", "system_ext.", "vendor." };
 
-    string fp = "Xiaomi/dipper/dipper:8.1.0/OPM1.171019.011/V9.5.5.0.OEAMIFA:user/release-keys";
-    string desc = "dipper-user 8.1.0 OPM1.171019.011 V9.5.5.0.OEAMIFA release-keys";
+    string fp = "google/redfin/redfin:11/RQ3A.210805.001.A1/7474174:user/release-keys";
+    string desc = "redfin-user 11 RQ3A.210805.001.A1 7474174:user release-keys";
 
     for (const string &source : source_partitions) {
         set_ro_build_prop(source, "fingerprint", fp, false);
@@ -93,13 +94,36 @@ void set_device_fp() {
     }
 }
 
+
+void load_dalvik_properties() {
+    struct sysinfo sys;
+
+    sysinfo(&sys);
+    if (sys.totalram >= 5ull * 1024 * 1024 * 1024){
+        // from - phone-xhdpi-6144-dalvik-heap.mk
+        property_override("dalvik.vm.heapstartsize", "16m");
+        property_override("dalvik.vm.heapgrowthlimit", "256m");
+        property_override("dalvik.vm.heapsize", "512m");
+        property_override("dalvik.vm.heaptargetutilization", "0.5");
+        property_override("dalvik.vm.heapmaxfree", "32m");
+    } else if (sys.totalram >= 7ull * 1024 * 1024 * 1024) {
+        // 8GB
+        property_override("dalvik.vm.heapstartsize", "24m");
+        property_override("dalvik.vm.heapgrowthlimit", "256m");
+        property_override("dalvik.vm.heapsize", "512m");
+        property_override("dalvik.vm.heaptargetutilization", "0.46");
+        property_override("dalvik.vm.heapmaxfree", "48m");
+    }
+
+    property_override("dalvik.vm.heapminfree", "8m");
+}
+
 void vendor_load_properties()
 {
     /*
      * Detect device and configure properties
      */
-
-if (GetProperty("ro.boot.hwname", "") == "karna") { // POCO X3 (India)
+    if (GetProperty("ro.boot.hwname", "") == "karna") { // POCO X3 (India)
         set_device_props("POCO", "karna", "POCO X3", "karna_in");
         property_override("ro.product.mod_device", "surya_in_global");
     } else { // POCO X3 NFC
@@ -107,6 +131,7 @@ if (GetProperty("ro.boot.hwname", "") == "karna") { // POCO X3 (India)
         property_override("ro.product.mod_device", "surya_global");
     }
 
+    load_dalvik_properties();
     //Safetynet workarounds
     set_device_fp();
     property_override("ro.oem_unlock_supported", "0");

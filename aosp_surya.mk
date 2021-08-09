@@ -27,10 +27,6 @@ $(call inherit-product, vendor/aosp/config/common_full_phone.mk)
 # Boot Animation
 TARGET_BOOT_ANIMATION_RES := 1080
 
-# Gapps
-TARGET_GAPPS_ARCH := arm64
-IS_PHONE := true
-
 # Hycon Stuffs
 TARGET_USES_BLUR := true
 TARGET_INCLUDE_PIXEL_CHARGER := true
